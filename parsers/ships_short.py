@@ -23,6 +23,6 @@ def parse_row(row):
 
 
 html = read_fixture('ships_short', 'list_of_ships')
-rows = html.html.select('.mw-parser-output .wikitable tr')
+rows = html.select('.mw-parser-output .wikitable tr')
 data = [parse_row(row) for row in rows if not row.th]
 save_json('ships_short', data)
