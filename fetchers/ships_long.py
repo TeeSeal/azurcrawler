@@ -8,7 +8,8 @@ def extract_url(row):
 
 html = get('https://azurlane.koumakan.jp/List_of_Ships').text
 fp = BeautifulSoup(html, 'lxml')
-urls = [extract_url(row) for row in fp if not row.select_one('th')]
+html = fp.select('.mw-parser-output .wikitable tr')
+urls = [extract_url(row) for row in html if not row.select_one('th')]
 
 for url in urls:
     name = url.split('/')[-1]
