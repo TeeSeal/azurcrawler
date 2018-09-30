@@ -14,9 +14,9 @@ def extract_names(html):
 
 def extract_base_data(html):
     keys = ['construction_time', 'rarity', 'class', 'id', 'nationality', 'type']
-    base_data = zip(keys, [info.find('td').text.strip(' \n') for info in html.find_all('tr')[:6]])
-
-    return dict(base_data)
+    base_data = dict(zip(keys, [info.find('td').text.strip(' \n') for info in html.find_all('tr')[:6]]))
+    base_data['rarity'] = parse_rarity(html.find_all('tr')[1].find('img')['alt'])
+    return base_data
 
 def extract_stats(html):
     base_stats = [stat.text.replace('\n', '').strip() for stat in html.select_one('[title*="Base Stats"]').find_all('tr')[-3:]]
