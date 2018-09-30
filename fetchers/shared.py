@@ -11,5 +11,5 @@ def save_fixture(dir_name, file_name, html):
         makedirs(dir_path)
 
     path = join(dir_path, f'{file_name}.html')
-    with open(path, "w") as file:
+    with open(path, 'w', encoding='utf8') as file:
         file.write(html)
