@@ -9,7 +9,7 @@ def extract_names(html):
         'jp': search(r'(?<=jp: )[^\)]+', title).group(0).strip()
     }
 
-    return names
+    return { 'names': names }
 
 def extract_base_data(html):
     keys = ['construction_time', 'rarity', 'class', 'id', 'nationality', 'type']
