@@ -41,8 +41,8 @@ def extract_equipment_data(html):
     return { 'equipment': [parse_equip(row) for row in equips] }
 
 def parse_equip(row):
-    strings = [td.text.strip() for td in row.select('td')[-2:]]
-    return dict(zip(['efficiency', 'equipable'], strings))
+    strings = [td.text.strip() for td in row.find_all('td')]
+    return dict(zip(['slot', 'efficiency', 'equipable'], strings))
 
 def extract_pictures(html):
     return {
