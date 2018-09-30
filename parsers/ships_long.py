@@ -51,8 +51,8 @@ def extract_equipment_data(html):
 def extract_pictures(html):
     return {
         'images': [extract_skin(tab) for tab in html.select('div.shiparttabbernew .tabbertab')],
-        'icon': build_url(html.select_one('img')['src']) if html.select_one('img') else 'N/A',
-        'chibi': build_url(html.select_one('#talkingchibi img')['src']) if html.select_one('#talkingchibi img') else 'N/A'
+        'icon': build_url(html.select_one('img')['src']) if html.select_one('img') else '',
+        'chibi': build_url(html.select_one('#talkingchibi img')['src']) if html.select_one('#talkingchibi img') else ''
     }
 
 def extract_skin(tab):
