@@ -8,7 +8,6 @@ def extract_names(html):
         'cn': search(r'(?<=cn: )[^;]+', title).group(0).strip(),
         'jp': search(r'(?<=jp: )[^\)]+', title).group(0).strip()
     }
-
     return { 'names': names }
 
 def extract_base_data(html):
@@ -22,8 +21,7 @@ def extract_stats(html):
     speed = int(search(r'\d+', base_stats[0]).group(0).strip()) if search(r'\d+', base_stats[0]) else 0
     reinforcement_value = [int(i) for i in findall(r'\d+', base_stats[1])]
     scrap_income = [int(i) for i in findall(r'\d+', base_stats[2])]
-
-    stats = {
+    return {
         'base': parse_stats_table(html.select_one('[title*="Base Stats"]')),
         'max': parse_stats_table(html.select_one('[title*="Level 100"]')),
         'max20': parse_stats_table(html.select_one('[title*="Level 120"]')),
@@ -32,21 +30,16 @@ def extract_stats(html):
         'scrap_income': dict(zip(['coin', 'oil', 'medal'], scrap_income))
     }
 
-    return stats
-
 def parse_stats_table(table):
     keys = ['health', 'armor', 'reload', 'firepower', 'torpedo', 'speed', 'anti_air', 'air_power', 'oil_usage', 'anti_sub']
     # Oh boi
     data = zip(keys, map(lambda td: int(sub(r'\D', '', td.text.strip())) if search(r'\d+', td.text) else td.text.strip(), table.select('td')[:10]))
-
     return dict(data)
 
 def extract_equipment_data(html):
     data = [row for div in html.select('div[style*="text-align:center;"]') for table in div.select('table') for row in table.select('tr')[-3:]]
     equipment = [equip.text.strip() for row in data for equip in row.select('td')[-2:]]
-    test = dict(zip(equipment[1::2], equipment[::2]))
-
-    return test
+    return dict(zip(equipment[1::2], equipment[::2]))
 
 def extract_pictures(html):
     return {
@@ -84,13 +77,13 @@ def parse_rarity(str):
 data = []
 fixtures = read_all_fixtures('ships_long')
 for fp in fixtures:
-    ship = { 'page_url': fp.select_one('meta[property="og:url"]')['content'] }
-    names = extract_names(fp)
-    base_data = extract_base_data(fp)
-    stats = extract_stats(fp)
-    equipment = extract_equipment_data(fp)
-    pictures = extract_pictures(fp)
-    drop_locations = extract_drop_locations(fp)
-    data.append({**ship, **names, **base_data, **stats, **equipment, **pictures, **drop_locations})
+    data.append({
+        **dict({ 'page_url': fp.select_one('meta[property="og:url"]')['content'] }),
+        **extract_names(fp),
+        **extract_base_data(fp),
+        **extract_stats(fp),
+        **extract_equipment_data(fp),
+        **extract_pictures(fp)
+    })
 
 save_json('ships_long', data)
