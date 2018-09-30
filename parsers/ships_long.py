@@ -37,9 +37,12 @@ def parse_stats_table(table):
     return dict(data)
 
 def extract_equipment_data(html):
-    data = [row for div in html.select('div[style*="text-align:center;"]') for table in div.select('table') for row in table.select('tr')[-3:]]
-    equipment = [equip.text.strip() for row in data for equip in row.select('td')[-2:]]
-    return dict(zip(equipment[1::2], equipment[::2]))
+    equips = [row for div in html.select('div[style*="text-align:center;"]') for table in div.select('table') for row in table.select('tr')[-3:]]
+    return { 'equipment': [parse_equip(row) for row in equips] }
+
+def parse_equip(row):
+    strings = [td.text.strip() for td in row.select('td')[-2:]]
+    return dict(zip(['efficiency', 'equipable'], strings))
 
 def extract_pictures(html):
     return {
@@ -54,10 +57,10 @@ def extract_skin(tab):
 
 def extract_drop_locations(html):
     chapters = html.select('.nodesktop table tr')[6:]
-    drop_locations = [drop_stages(index, chapter) for index, chapter in enumerate(chapters)]
+    drop_locations = [parse_drop_stages(index, chapter) for index, chapter in enumerate(chapters)]
     return { 'drop_locations': [location for sublist in drop_locations for location in sublist] }
 
-def drop_stages(chapter_index, chapter):
+def parse_drop_stages(chapter_index, chapter):
     stages = ['Green' in td['style'] for td in chapter.find_all('td')]
     indexes = [i for i, drops in enumerate(stages) if drops]
     return [f'{chapter_index + 1}-{index + 1}' for index in indexes]
