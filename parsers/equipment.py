@@ -49,7 +49,7 @@ def stats_keys_for(equip_type):
     ]
 
 def extract_additional_data(tab):
-    table = tab.find_all('table')[2]
+    table = tab.find_all('table')[-1]
     data = [td.text.strip() for td in table.find_all("td")[1::2]]
 
     return dict(zip(['obtained_from', 'notes'], data))
