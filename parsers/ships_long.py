@@ -50,27 +50,15 @@ def extract_equipment_data(html):
     return test
 
 def extract_pictures(html):
-    data = [data for data in html.select('div.shiparttabbernew .tabbertab')]
-    images = [img for image in data for img in image.select('img')]
-    skins = []
-    # This shouldn't be as hacky but meh
-    i = 0
-    for skin in images:
-        if skin.get('srcset') is not None:
-            image = {
-                'title': data[i].get('title'),
-                'url': build_url(skin.get('srcset').split()[0])
-            }
-            i += 1
-            skins.append(image)
-
-    urls = {
-        'images': skins,
+    return {
+        'images': [extract_skin(tab) for tab in html.select('div.shiparttabbernew .tabbertab')],
         'icon': build_url(html.select_one('img')['src']) if html.select_one('img') else 'N/A',
         'chibi': build_url(html.select_one('#talkingchibi img')['src']) if html.select_one('#talkingchibi img') else 'N/A'
     }
 
-    return urls
+def extract_skin(tab):
+    image_path = tab.select_one('img')['srcset'].split(' ')[-2]
+    return { 'name': tab['title'], 'url': build_url(image_path) }
 
 def parse_rarity(str):
     switch = {
