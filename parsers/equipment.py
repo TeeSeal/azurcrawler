@@ -13,12 +13,7 @@ def extract_base_data(tab):
     table = tab.find('table')
     data = [row.select('td')[-1].text.replace('★', '').strip() for row in table.find_all('tr')[3:]]
     keys = ['type', 'rarity', 'nation', 'tech_level']
-    return {'picture': extract_picture(table), **dict(zip(keys, data))}
-
-def extract_picture(table):
-    img = table.find('img')
-    path = img['srcset'].split(' ')[-2] if 'srcset' in img else img['src']
-    return build_url(path)
+    return dict(zip(keys, data))
 
 def extract_stats(tab):
     table = tab.find_all('table')[1]
@@ -59,6 +54,10 @@ def extract_additional_data(tab):
 
     return dict(zip(['obtained_from', 'notes'], data))
 
+def extract_picture(html):
+    img = html.find('img')
+    path = img['srcset'].split(' ')[-2] if 'srcset' in img else img['src']
+    return build_url(path)
 
 data = []
 for fp in read_all_fixtures('equipment'):
@@ -67,6 +66,7 @@ for fp in read_all_fixtures('equipment'):
             'page_url': fp.select_one('meta[property="og:url"]')['content'],
             'name': fp.find('th').text.strip(),
             'type': fp.find_all('tr')[2].select('td')[-1].text.strip(),
+            'icon': extract_picture(fp),
             'types': [parse_tab(tab) for tab in fp.select('.tabbertab')]
         }),
     })
