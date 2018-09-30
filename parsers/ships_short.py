@@ -1,7 +1,8 @@
-from shared import read_fixture, save_json
+from shared import read_fixture, build_url, save_json
 
 def parse_row(row):
     tds = [td.text for td in row.select("td")]
+    img = thumbnails.select_one(f'a[title="{tds[1]}"] img')
     data = {
         'id': tds[0],
         'name': tds[1],
@@ -16,13 +17,15 @@ def parse_row(row):
             'airPower': tds[9],
             'torpedo': tds[10]
         },
-        'url': 'https://azurlane.koumakan.jp{}'.format(row.select_one('a')['href'])
+        'url': build_url(row.select_one('a')['href']),
+        'thumbnail': build_url(img['srcset'].split()[0] if img.get('srcset', None) else img['src'])
     }
 
     return data
 
 
 fixture = read_fixture('ships_short', 'list_of_ships')
+thumbnails = read_fixture('ships_short', 'list_of_ships_by_image')
 rows = fixture.select('.mw-parser-output .wikitable tr')
 data = [parse_row(row) for row in rows if not row.th]
 save_json('ships_short', data)
