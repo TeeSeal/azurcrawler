@@ -7,8 +7,7 @@ def extract_url(row):
     return f'https://azurlane.koumakan.jp{path}'
 
 html = get('https://azurlane.koumakan.jp/List_of_Ships').text
-only_output = SoupStrainer('div', attrs={'class': 'mw-parser-output'})
-fp = BeautifulSoup(html, 'lxml', parse_only=only_output)
+fp = BeautifulSoup(html, 'lxml')
 urls = [extract_url(row) for row in fp if not row.select_one('th')]
 
 for url in urls:

@@ -1,5 +1,4 @@
 from shared import read_fixture, save_json
-from bs4 import BeautifulSoup, SoupStrainer
 
 def parse_row(row):
     tds = [td.text for td in row.select("td")]
@@ -24,7 +23,6 @@ def parse_row(row):
 
 
 fixture = read_fixture('ships_short', 'list_of_ships')
-html = BeautifulSoup(fixture, 'lxml')
-rows = html.select('.mw-parser-output .wikitable tr')
+rows = fixture.select('.mw-parser-output .wikitable tr')
 data = [parse_row(row) for row in rows if not row.th]
 save_json('ships_short', data)

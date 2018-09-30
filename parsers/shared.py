@@ -1,6 +1,7 @@
 from os import makedirs, listdir
 from os.path import realpath, dirname, join, isdir, abspath
 from json import dumps
+from bs4 import BeautifulSoup
 
 ROOT = abspath(join(dirname(realpath(__file__)), '..'))
 FIXTURES = join(ROOT, 'fixtures')
@@ -11,7 +12,7 @@ def read_fixture(dir_name, file_name):
         file_name = f'{file_name}.html'
 
     with open(join(FIXTURES, dir_name, file_name), encoding='utf8') as fp:
-        return fp.read()
+        return BeautifulSoup(fp, 'lxml')
 
 
 def read_all_fixtures(dir_name):

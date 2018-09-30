@@ -1,5 +1,4 @@
-from shared import read_all_fixtures, save_json, read_fixture, build_url
-from bs4 import BeautifulSoup, SoupStrainer
+from shared import read_all_fixtures, build_url, save_json
 from re import sub, search, findall
 
 def extract_names(html):
@@ -75,13 +74,12 @@ def parse_rarity(str):
 data = []
 fixtures = read_all_fixtures('ships_long')
 for fp in fixtures:
-    html = BeautifulSoup(fp, 'lxml')
-    ship = { 'page_url': html.select_one('meta[property="og:url"]')['content'] }
-    names = extract_names(html)
-    base_data = extract_base_data(html)
-    stats = extract_stats(html)
-    equipment = extract_equipment_data(html)
-    pictures = extract_pictures(html)
+    ship = { 'page_url': fp.select_one('meta[property="og:url"]')['content'] }
+    names = extract_names(fp)
+    base_data = extract_base_data(fp)
+    stats = extract_stats(fp)
+    equipment = extract_equipment_data(fp)
+    pictures = extract_pictures(fp)
     data.append({**ship, **names, **base_data, **stats, **equipment, **pictures})
 
 save_json('ships_long', data)
