@@ -12,7 +12,7 @@ def parse_tab(tab):
 def extract_base_data(tab):
     table = tab.find('table')
     data = [row.select('td')[-1].text.replace('★', '').strip() for row in table.find_all('tr')[3:]]
-    keys = ['type', 'rarity', 'nation', 'tech_level']
+    keys = ['rarity', 'nation', 'tech_level']
     return dict(zip(keys, data))
 
 def extract_stats(tab):
