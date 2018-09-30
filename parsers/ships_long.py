@@ -83,7 +83,8 @@ for fp in fixtures:
         **extract_base_data(fp),
         **extract_stats(fp),
         **extract_equipment_data(fp),
-        **extract_pictures(fp)
+        **extract_pictures(fp),
+        **extract_drop_locations(fp)
     })
 
 save_json('ships_long', data)
