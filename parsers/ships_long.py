@@ -59,6 +59,16 @@ def extract_skin(tab):
     image_path = tab.select_one('img')['srcset'].split(' ')[-2]
     return { 'name': tab['title'], 'url': build_url(image_path) }
 
+def extract_drop_locations(html):
+    chapters = html.select('.nodesktop table tr')[6:]
+    drop_locations = [drop_stages(index, chapter) for index, chapter in enumerate(chapters)]
+    return { 'drop_locations': [location for sublist in drop_locations for location in sublist] }
+
+def drop_stages(chapter_index, chapter):
+    stages = ['Green' in td['style'] for td in chapter.find_all('td')]
+    indexes = [i for i, drops in enumerate(stages) if drops]
+    return [f'{chapter_index + 1}-{index + 1}' for index in indexes]
+
 def parse_rarity(str):
     switch = {
         'Rarity Normal.png': 'Normal',
@@ -80,6 +90,7 @@ for fp in fixtures:
     stats = extract_stats(fp)
     equipment = extract_equipment_data(fp)
     pictures = extract_pictures(fp)
-    data.append({**ship, **names, **base_data, **stats, **equipment, **pictures})
+    drop_locations = extract_drop_locations(fp)
+    data.append({**ship, **names, **base_data, **stats, **equipment, **pictures, **drop_locations})
 
 save_json('ships_long', data)
