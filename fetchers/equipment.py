@@ -1,12 +1,18 @@
 from requests import get
-from shared import save_fixture
+from shared import save_fixture, build_url
 from bs4 import BeautifulSoup
 
-html = get('https://azurlane.koumakan.jp/Equipment').text
+html = get('https://azurlane.koumakan.jp/Equipment_List').text
 fp = BeautifulSoup(html, 'lxml')
+category_urls = [link['href'] for link in fp.find('ul').select('a')]
 
-for td in fp.select('.mw-collapsible.wikitable td[style*="Gold"]'):
-    link = td.select('a')[-1]
-    path = link['href']
-    print(link['title'])
-    save_fixture('equipment', path[1:].replace('/', ''), get(f'https://azurlane.koumakan.jp{path}').text)
+for category_url in category_urls:
+    print(category_url)
+    category_html = get(build_url(category_url)).text
+    table = BeautifulSoup(category_html, 'lxml').select_one('.tabbertab table')
+    paths = set([row.find('a')['href'] for row in table.find_all('tr') if not row.find('th')])
+
+    for path in paths:
+        name = path[1:]
+        print(name)
+        save_fixture('equipment', name, get(build_url(path)).text)
