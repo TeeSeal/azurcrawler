@@ -7,7 +7,6 @@ fp = BeautifulSoup(html, 'lxml')
 category_urls = [link['href'] for link in fp.find('ul').select('a')]
 
 for category_url in category_urls:
-    print(category_url)
     category_html = get(build_url(category_url)).text
     table = BeautifulSoup(category_html, 'lxml').select_one('.tabbertab table')
     paths = set([row.find('a')['href'] for row in table.find_all('tr') if not row.find('th')])

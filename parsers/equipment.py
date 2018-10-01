@@ -64,7 +64,6 @@ def extract_picture(html):
 
 data = []
 for fp in read_all_fixtures('equipment'):
-    print(fp.select_one('meta[property="og:url"]')['content'])
     if not fp.find('th'):
         continue
 
