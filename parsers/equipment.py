@@ -56,7 +56,7 @@ def extract_additional_data(tab):
 
 def extract_picture(html):
     img = html.find('img')
-    path = img['srcset'].split(' ')[-2] if 'srcset' in img else img['src']
+    path = img['srcset'].split(' ')[-2] if img.has_attr('srcset') else img['src']
     return build_url(path)
 
 data = []

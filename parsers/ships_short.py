@@ -18,7 +18,7 @@ def parse_row(row):
             'torpedo': tds[10]
         },
         'url': build_url(row.select_one('a')['href']),
-        'thumbnail': build_url(img['srcset'].split()[0] if img.get('srcset', None) else img['src'])
+        'thumbnail': build_url(img['srcset'].split()[0] if img.has_attr('srcset') else img['src'])
     }
 
     return data
