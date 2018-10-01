@@ -1,15 +1,11 @@
 from requests import get
-from shared import save_fixture
-from bs4 import BeautifulSoup, SoupStrainer
-
-def extract_url(row):
-    path = row.select_one('a')['href']
-    return f'https://azurlane.koumakan.jp{path}'
+from shared import save_fixture, build_url
+from bs4 import BeautifulSoup
 
 html = get('https://azurlane.koumakan.jp/List_of_Ships').text
 fp = BeautifulSoup(html, 'lxml')
-html = fp.select('.mw-parser-output .wikitable tr')
-urls = [extract_url(row) for row in html if not row.select_one('th')]
+rows = fp.select('.mw-parser-output .wikitable tr')
+urls = [build_url(row.find('a')['href']) for row in rows if not row.find('th')]
 
 for url in urls:
     name = url.split('/')[-1]
