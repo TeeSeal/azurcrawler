@@ -33,7 +33,7 @@ def extract_stats(tab):
     return { **dict(zip(keys, stats)), 'weapons': weapons }
 
 def stats_keys_for(equip_type):
-    if equip_type in ['Fighter', 'Dive Bomber']:
+    if equip_type in ['Fighter', 'Dive Bomber', 'Torpedo Bomber']:
         return ['health', 'air_power', 'damage', 'range', 'rate_of_fire', 'spread', 'rounds', 'angle']
 
     if equip_type == 'Torpedo':
@@ -41,6 +41,9 @@ def stats_keys_for(equip_type):
 
     if equip_type == 'Auxiliary':
         return ['health', 'torpedo', 'reload', 'firepower', 'air_power', 'speed', 'anti_air', 'oxygen']
+
+    if equip_type == 'Sonar':
+        return ['anti_sub', 'accuracy', 'ping_frequency', 'range', 'characteristic']
 
     # Keys for the gun type
     return [
@@ -61,6 +64,10 @@ def extract_picture(html):
 
 data = []
 for fp in read_all_fixtures('equipment'):
+    print(fp.select_one('meta[property="og:url"]')['content'])
+    if not fp.find('th'):
+        continue
+
     data.append({
         **dict({
             'page_url': fp.select_one('meta[property="og:url"]')['content'],
