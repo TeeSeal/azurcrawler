@@ -13,5 +13,7 @@ for category_url in category_urls:
 
     for path in paths:
         name = path[1:]
+        if 'w/index.php?' in name:
+            continue
         print(name)
         save_fixture('equipment', name, get(build_url(path)).text)
