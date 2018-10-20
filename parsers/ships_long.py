@@ -65,6 +65,29 @@ def parse_drop_stages(chapter_index, chapter):
     indexes = [i for i, drops in enumerate(stages) if drops]
     return [f'{chapter_index + 1}-{index + 1}' for index in indexes]
 
+def extract_lb_ranks_and_skills(html):
+    table = html.select('table[width]')[1]
+    tds = [td.text.strip() for td in table.select('td') if td.text.strip() != '--']
+
+    lb_ranks = dict(zip(['first', 'second', 'third'], tds[0:5:2]))
+
+    ths = [th for th in table.select('th')[3:9:2] if th.text.strip() != '--']
+    skill_names = [th.text.strip() for th in ths]
+    skill_descriptions = tds[1:6:2]
+    skill_types = [extract_skill_type(th) for th in ths]
+    zipped = zip(skill_names, skill_types, skill_descriptions)
+    skills = [{ 'name': name, 'type': skill_type, 'description': description } for name, skill_type, description in zipped]
+
+    return { 'limit_break_ranks': lb_ranks, 'skills': skills }
+
+def extract_skill_type(th):
+    if 'DeepSkyBlue' in th['style']:
+        return 'defense'
+    elif 'Pink' in th['style']:
+        return 'offense'
+    else:
+        return 'support'
+
 def parse_rarity(str):
     switch = {
         'Rarity Normal.png': 'Normal',
@@ -87,7 +110,8 @@ for fp in fixtures:
         **extract_stats(fp),
         **extract_equipment_data(fp),
         **extract_pictures(fp),
-        **extract_drop_locations(fp)
+        **extract_drop_locations(fp),
+        **extract_lb_ranks_and_skills(fp)
     })
 
 save_json('ships_long', data)
